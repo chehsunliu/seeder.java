@@ -9,6 +9,9 @@
 
   <modules>
     <module>build-conventions/java</module>
+    <module>seeder-core</module>
+    <module>seeder-minio</module>
+    <module>seeder-redis</module>
   </modules>
 
   <properties>
