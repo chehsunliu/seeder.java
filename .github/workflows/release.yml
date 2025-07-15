@@ -21,7 +21,7 @@ jobs:
           version=${{ github.event.release.tag_name }}
           version="${version/v/}"
 
-          ./gradlew -P$version publishToMavenCentral
+          ./gradlew -Pversion=$version publishToMavenCentral
         env:
           ORG_GRADLE_PROJECT_mavenCentralUsername: ${{ secrets.MAVEN_CENTRAL_USERNAME }}
           ORG_GRADLE_PROJECT_mavenCentralPassword: ${{ secrets.MAVEN_CENTRAL_PASSWORD }}
