@@ -5,7 +5,6 @@ plugins {
 }
 
 group = "io.github.chehsunliu.seeder"
-version = "0.2.0-SNAPSHOT"
 
 repositories {
     mavenCentral()
