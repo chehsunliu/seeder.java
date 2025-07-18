@@ -1,4 +1,105 @@
 services:
+  dynamodb:
+    image: amazon/dynamodb-local:latest
+    restart: always
+    ports:
+      - "127.0.0.1:8000:8000"
+
+  dynamodb-init:
+    image: hashicorp/terraform:1.9
+    depends_on:
+      - dynamodb
+    restart: on-failure
+    volumes:
+      - type: bind
+        source: ./db-schemas/dynamodb
+        target: /infra
+    working_dir: /infra
+    entrypoint: "/bin/sh"
+    command: ["-c", "terraform init && terraform apply -auto-approve"]
+    environment:
+      TF_VAR_endpoint: http://dynamodb:8000
+      TF_VAR_region: us-west-2
+      TF_VAR_access_key_id: xxx
+      TF_VAR_secret_access_key: xxx
+
+  mariadb:
+    image: mariadb:11.8
+    restart: always
+    ports:
+      - "127.0.0.1:13306:3306"
+    environment:
+      MARIADB_ROOT_PASSWORD: xxx
+    command: ["--general-log=1", "--general-log-file=/tmp/query.log"]
+
+  mariadb-init:
+    image: flyway/flyway:11-alpine
+    depends_on:
+      - mariadb
+    restart: on-failure
+    volumes:
+      - type: bind
+        source: ./db-schemas/mariadb
+        target: /flyway/sql
+    command:
+      - "-url=jdbc:mariadb://mariadb:3306/demo?createDatabaseIfNotExist=true&allowPublicKeyRetrieval=true"
+      - "-user=root"
+      - "-password=xxx"
+      - "-connectRetries=60"
+      - "migrate"
+
+  mysql:
+    image: mysql:8.4
+    restart: always
+    ports:
+      - "127.0.0.1:3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: xxx
+    command: ["--general-log=1", "--general-log-file=/tmp/query.log"]
+
+  mysql-init:
+    image: flyway/flyway:11-alpine
+    depends_on:
+      - mysql
+    restart: on-failure
+    volumes:
+      - type: bind
+        source: ./db-schemas/mysql
+        target: /flyway/sql
+    command:
+      - "-url=jdbc:mysql://mysql:3306/demo?createDatabaseIfNotExist=true&allowPublicKeyRetrieval=true"
+      - "-user=root"
+      - "-password=xxx"
+      - "-connectRetries=60"
+      - "migrate"
+
+  postgres:
+    image: postgres:17-alpine
+    restart: always
+    ports:
+      - "127.0.0.1:5432:5432"
+    environment:
+      POSTGRES_PASSWORD: xxx
+      POSTGRES_DB: demo
+    command: ["-c", "log_statement=all"]
+
+  postgres-init:
+    image: flyway/flyway:11-alpine
+    depends_on:
+      - postgres
+    restart: on-failure
+    volumes:
+      - type: bind
+        source: ./db-schemas/postgres
+        target: /flyway/sql
+    command:
+      - "-url=jdbc:postgresql://postgres:5432/demo"
+      - "-user=postgres"
+      - "-password=xxx"
+      - "-connectRetries=60"
+      - "-schemas=app"
+      - "migrate"
+
   minio:
     image: minio/minio
     restart: always
