@@ -40,7 +40,13 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Start containers
-        run: docker compose up -d minio redis
+        run: |
+          docker compose up -d \
+            mariadb mariadb-init \
+            mysql mysql-init \
+            postgres postgres-init \
+            minio \
+            redis
 
       - name: Run the tests
         run: ./gradlew test
