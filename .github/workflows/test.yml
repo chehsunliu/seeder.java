@@ -42,11 +42,17 @@ jobs:
       - name: Start containers
         run: |
           docker compose up -d \
-            mariadb mariadb-init \
-            mysql mysql-init \
-            postgres postgres-init \
+            mariadb \
+            mysql \
+            postgres \
             minio \
             redis
+
+      - name: Provision databases
+        run: |
+          docker compose up --exit-code-from mariadb-init mariadb-init
+          docker compose up --exit-code-from mysql-init mysql-init
+          docker compose up --exit-code-from postgres-init postgres-init
 
       - name: Run the tests
         run: ./gradlew test
