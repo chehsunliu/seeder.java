@@ -3,7 +3,10 @@ plugins {
 }
 
 dependencies {
-    implementation(project(":seeder-core"))
-    implementation("org.mariadb.jdbc:mariadb-java-client:3.5.4")
-    implementation("com.fasterxml.jackson.core:jackson-databind:2.19.1")
+    api(project(":seeder-core"))
+    compileOnly("org.mariadb.jdbc:mariadb-java-client:3.5.4")
+    compileOnly("com.fasterxml.jackson.core:jackson-databind:2.19.1")
+
+    testImplementation("org.mariadb.jdbc:mariadb-java-client:3.5.4")
+    testImplementation("com.fasterxml.jackson.core:jackson-databind:2.19.1")
 }

@@ -3,6 +3,8 @@ plugins {
 }
 
 dependencies {
-    implementation(project(":seeder-core"))
-    implementation("software.amazon.awssdk:s3")
+    api(project(":seeder-core"))
+    compileOnly("software.amazon.awssdk:s3")
+
+    testImplementation("software.amazon.awssdk:s3")
 }
